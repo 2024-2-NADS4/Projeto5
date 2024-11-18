@@ -1,0 +1,1 @@
+C:\FECAP\WatchDog.Maui\WatchDog.Maui\WatchDog.Maui.csproj;x64
