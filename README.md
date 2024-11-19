@@ -52,24 +52,17 @@ Essa mudança permitiu criar um modelo de negócio mais sólido e alinhado às d
 
 ## 🛠 Estrutura de pastas
 -Raiz
-|
-|-->documentos
- |-->Ciência de Dados
- |-->Analise_de_Violacao_de_Dados.pdf
- |-->basededados_com_grafico_impactoSocial.xlsx
- |-->dataset_cybersecurity.ipynb
- |-->df_1.csv
- |-->Inteligência Artificial
- |-->PI_AI.ipynb
- |-->Segurança da Informação e Cibernética
- |-->Teste de mesa_Criptografia.pdf
-|-->imagem
- |-->logo-dataSafeIA.png
-|-->src
- |-->Frontend
- |-->instruções.txt
- |-->resumos.txt
- |-->cript_dbPiBackend.txt
+|-->app
+ |-->WatchDog.Maui.API
+ |-->WatchDog.Maui
+ |-->WatchDog.Maui.sln
+|-->extras
+ |-->IA WatchDog.pdf
+ |-->eBook Apoio - WatchDog.pdf
+ |-->relatorio_projeto.pdf
+|-->imagens
+ |-->banner_watchdog.jpg
+ |-->logotipo.png
 |.gitignore
 |readme.md
 
