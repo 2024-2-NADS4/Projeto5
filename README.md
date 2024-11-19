@@ -52,18 +52,22 @@ Essa mudança permitiu criar um modelo de negócio mais sólido e alinhado às d
 
 ## 🛠 Estrutura de pastas
 -Raiz
+
 |-->app
  |-->WatchDog.Maui.API
  |-->WatchDog.Maui
  |-->WatchDog.Maui.sln
+
 |-->extras
  |-->IA WatchDog.pdf
  |-->eBook Apoio - WatchDog.pdf
  |-->relatorio_projeto.pdf
+
 |-->imagens
  |-->banner_watchdog.jpg
  |-->logotipo.png
 |.gitignore
+
 |readme.md
 
 
