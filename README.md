@@ -50,4 +50,27 @@ O Watchdog começou como um **chatbot para análise de possíveis golpes**, mas 
 
 Essa mudança permitiu criar um modelo de negócio mais sólido e alinhado às demandas do mercado, enquanto continuamos impactando positivamente a vida de nossos usuários.
 
+## 🛠 Estrutura de pastas
+-Raiz
+|
+|-->documentos
+ |-->Ciência de Dados
+ |-->Analise_de_Violacao_de_Dados.pdf
+ |-->basededados_com_grafico_impactoSocial.xlsx
+ |-->dataset_cybersecurity.ipynb
+ |-->df_1.csv
+ |-->Inteligência Artificial
+ |-->PI_AI.ipynb
+ |-->Segurança da Informação e Cibernética
+ |-->Teste de mesa_Criptografia.pdf
+|-->imagem
+ |-->logo-dataSafeIA.png
+|-->src
+ |-->Frontend
+ |-->instruções.txt
+ |-->resumos.txt
+ |-->cript_dbPiBackend.txt
+|.gitignore
+|readme.md
+
 
