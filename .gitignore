@@ -1,0 +1,105 @@
+# Arquivos de build
+bin/
+obj/
+[Bb]uild/
+[Bb]uilds/
+**/*.user
+**/*.rsuser
+**/*.suo
+**/*.cache
+**/*.pdb
+*.dbmdl
+*.opendb
+*.vscode/
+
+# Arquivos de logs e temporários
+*.log
+*.nlog
+*.xml
+*.tlog
+*.ide.*
+
+# Arquivos do Rider e VS Code
+.idea/
+.vscode/
+
+# Arquivos gerados pelo sistema operacional
+.DS_Store
+Thumbs.db
+*.~lock.*
+
+# Pacotes NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Configurações específicas de usuário
+.vs/
+*.sln.docstates
+
+# Arquivos MAUI e relacionados ao Xamarin
+*.dSYM
+*.apk
+*.apks
+*.app
+*.ipa
+*.aab
+*.xcworkspace/
+*.xcuserdata/
+*.gradle/
+*.crash
+*.manifest
+*.tlog
+*.dsym
+
+# Arquivos gerados por compiladores
+*.dll
+*.exe
+*.ilk
+*.lib
+*.log
+*.obj
+*.iobj
+*.ipdb
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tmp
+*.tmp_proj
+*.cmd
+*.userosscache
+*.log.json
+
+# Arquivos gerados pelo Visual Studio
+*.vsix
+.vs/
+
+# Arquivos de depuração do MAUI
+*.csproj.user
+*.pidb
+*.pidb-shm
+*.pidb-wal
+
+# Arquivos de publicação
+publish/
+AppPackages/
+TestResults/
+
+# Configurações específicas de máquina para projetos .NET
+.env
+.env.*
+secrets.json
+appsettings.Development.json
+appsettings.Production.json
+
+# MAUI: Projetos específicos de plataforma
+**/bin/
+**/obj/
+**/platforms/
+**/Resources/Raw/*

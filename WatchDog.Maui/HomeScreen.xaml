@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:WatchDog.Maui"
+             x:Class="WatchDog.Maui.HomeScreen"
+             Title="">
+    <ScrollView>
+        <StackLayout Padding="10" Margin="150">
+            <views:LogoView />
+
+            <Label Text="Escolha uma opção"
+           FontSize="32"
+           HorizontalOptions="Center"
+           Margin="0,0,0,15"/>
+
+            <Button Text="Criptografar"
+            Clicked="OnEncryptionClicked"
+            Margin="0,20,0,0" />
+
+            <Button Text="Descriptografar"
+            Clicked="OnDecryptionClicked"
+            Margin="0,20,0,0" />
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

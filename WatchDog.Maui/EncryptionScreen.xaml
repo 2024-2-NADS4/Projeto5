@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:WatchDog.Maui"
+             x:Class="WatchDog.Maui.EncryptionScreen"
+             Title="">
+    <ScrollView>
+        <VerticalStackLayout Padding="10" Spacing="15" Margin="100,50,100,50">
+            <views:LogoView />
+            <Label Text="WatchDog - Criptografia" 
+               FontSize="24" 
+               HorizontalOptions="Center" 
+               VerticalOptions="Start" 
+               Margin="0,0,0,20"/>
+
+            <!-- Histórico de Logs -->
+            <ScrollView HeightRequest="200" VerticalOptions="StartAndExpand">
+                <Label x:Name="LogHistory" 
+                   VerticalOptions="Start" 
+                   LineBreakMode="WordWrap" 
+                   MaxLines="10"/>
+            </ScrollView>
+
+            <HorizontalStackLayout Spacing="10">
+                <CheckBox x:Name="IsFrequentlyUsedCheckBox" />
+                <Label Text="O arquivo é usado com frequência?" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout Spacing="10">
+                <CheckBox x:Name="IsHighlyConfidentialCheckBox" />
+                <Label Text="O arquivo contém dados extremamente sigilosos?" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout Spacing="10">
+                <CheckBox x:Name="IsSharedWithThirdPartiesCheckBox" />
+                <Label Text="O arquivo será compartilhado com terceiros?" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <!-- Botões -->
+            <Button x:Name="UploadButton" 
+                Text="Upload Arquivo" 
+                Clicked="OnUploadFileClicked" 
+                HorizontalOptions="FillAndExpand" />
+
+            <Button x:Name="ProcessButton" 
+                Text="Processar Arquivo" 
+                Clicked="OnProcessFileClicked" 
+                HorizontalOptions="FillAndExpand" />
+
+            <Button x:Name="DownloadButton" 
+                Text="Baixar Arquivo Criptografado" 
+                Clicked="OnDownloadFileClicked" 
+                HorizontalOptions="FillAndExpand" 
+                IsEnabled="False" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
