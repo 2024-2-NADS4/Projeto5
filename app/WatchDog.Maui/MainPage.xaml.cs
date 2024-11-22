@@ -1,14 +1,13 @@
-﻿using System.Net.Http.Headers;
-using System.Security.Cryptography;
-using System.Text;
-
-namespace WatchDog.Maui
+﻿namespace WatchDog.Maui
 {
     public partial class MainPage : ContentPage
     {
-        public MainPage()
+        private readonly IServiceProvider _serviceProvider;
+
+        public MainPage(IServiceProvider serviceProvider)
         {
             InitializeComponent();
+            _serviceProvider = serviceProvider;
         }
 
         private async void OnLoginClicked(object sender, EventArgs e)
@@ -22,12 +21,12 @@ namespace WatchDog.Maui
                 return;
             }
 
-            // Simular a autenticação (conectar API)
             bool isAuthenticated = AuthenticateUser(username, password);
 
             if (isAuthenticated || username == "admin" && password == "admin")
             {
-                await Navigation.PushAsync(new HomeScreen());
+                var homeScreen = _serviceProvider.GetRequiredService<HomeScreen>();
+                await Navigation.PushAsync(homeScreen);
             }
             else
             {
@@ -36,15 +35,10 @@ namespace WatchDog.Maui
         }
 
         // Método que simula a autenticação do usuário (conectar API)
-        private bool AuthenticateUser(string username, string password)
+        private static bool AuthenticateUser(string username, string password)
         {
             // Simulação de autenticação (substitua com a lógica de autenticação real)
             return username == "user" && password == "password";
-        }
-
-        private async void OnRegisterClicked(object sender, EventArgs e)
-        {
-            await Navigation.PushAsync(new RegisterScreen());
         }
     }
 }

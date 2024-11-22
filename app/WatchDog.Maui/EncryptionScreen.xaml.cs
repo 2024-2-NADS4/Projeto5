@@ -1,19 +1,22 @@
+using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
-using System.Net.Http;
+using Windows.Storage.Pickers;
 
 namespace WatchDog.Maui;
 
 public partial class EncryptionScreen : ContentPage
 {
-    private string filePath = string.Empty;
-    private string encryptedFilePath = string.Empty;
     private readonly HttpClient _httpClient = new();
+    private readonly ILogger<EncryptionScreen> _logger;
+    private string filePath = string.Empty;
 
-    public EncryptionScreen()
+    public EncryptionScreen(ILogger<EncryptionScreen> logger)
     {
         InitializeComponent();
+        _logger = logger;
     }
 
+    // Botão de Upload
     private async void OnUploadFileClicked(object sender, EventArgs e)
     {
         try
@@ -22,105 +25,86 @@ public partial class EncryptionScreen : ContentPage
             if (result != null)
             {
                 filePath = result.FullPath;
-                LogHistory.Text += $"\nArquivo carregado: {result.FileName}";
+                _logger.LogInformation("Arquivo carregado: {FileName}", result.FileName);
+
+                // Mostrar popup de confirmação
+                bool confirmUpload = await DisplayAlert(
+                    "Confirmação de Upload",
+                    $"Você selecionou o arquivo: {result.FileName}\nDeseja enviá-lo para criptografia?",
+                    "Sim",
+                    "Não"
+                );
+
+                if (confirmUpload)
+                {
+                    _logger.LogInformation("Usuário confirmou o envio do arquivo: {FileName}", result.FileName);
+                    await DisplayAlert("Upload", "Arquivo carregado com sucesso.", "OK");
+
+                    // Processa automaticamente o arquivo após upload
+                    await ProcessFileAsync();
+                }
+                else
+                {
+                    _logger.LogWarning("Usuário cancelou o envio do arquivo.");
+                    await DisplayAlert("Cancelado", "O envio do arquivo foi cancelado.", "OK");
+                }
             }
             else
             {
-                LogHistory.Text += "\nNenhum arquivo selecionado.";
+                _logger.LogWarning("Nenhum arquivo foi selecionado.");
+                await DisplayAlert("Erro", "Nenhum arquivo selecionado.", "OK");
             }
         }
         catch (Exception ex)
         {
-            LogHistory.Text += $"\nErro ao carregar arquivo: {ex.Message}";
+            _logger.LogError(ex, "Erro ao carregar arquivo.");
+            await DisplayAlert("Erro", $"Erro ao carregar arquivo: {ex.Message}", "OK");
         }
     }
 
-    private async void OnProcessFileClicked(object sender, EventArgs e)
+    // Processar o Arquivo
+    private async Task ProcessFileAsync()
     {
         if (string.IsNullOrWhiteSpace(filePath))
         {
-            LogHistory.Text += "\nNenhum arquivo carregado. Por favor, faça o upload primeiro.";
+            _logger.LogWarning("Tentativa de processar sem arquivo carregado.");
+            await DisplayAlert("Erro", "Nenhum arquivo carregado. Por favor, faça o upload primeiro.", "OK");
             return;
         }
 
+        // Obter valores das checkboxes
+        bool isHighlyConfidential = IsHighlyConfidentialCheckBox.IsChecked;
+        bool isFrequentlyUsed = IsFrequentlyUsedCheckBox.IsChecked;
+        bool isSharedWithThirdParties = IsSharedWithThirdPartiesCheckBox.IsChecked;
+
         try
         {
-            // Gerar prompt com base nas seleções
-            string prompt = GeneratePrompt();
+            var (encryptedFilePath, encryptionMethod) = await SendFileToEncrypt(filePath, isHighlyConfidential, isFrequentlyUsed, isSharedWithThirdParties);
 
-            LogHistory.Text += $"\nPrompt gerado: {prompt}";
-
-            // Enviar o arquivo para a API para criptografar
-            encryptedFilePath = await SendFileToEncrypt(filePath, prompt);
             if (!string.IsNullOrEmpty(encryptedFilePath))
             {
-                LogHistory.Text += $"\nArquivo criptografado com sucesso: {Path.GetFileName(encryptedFilePath)}";
+                _logger.LogInformation("Arquivo criptografado com sucesso: {EncryptedFile}", encryptedFilePath);
 
-                // Habilitar botão para download
-                DownloadButton.IsEnabled = true;
+                await DisplayAlert("Método de Criptografia", $"O arquivo foi criptografado usando: {encryptionMethod}", "OK");
+
+                // Permitir que o usuário escolha onde salvar o arquivo
+                await SaveEncryptedFile(encryptedFilePath);
             }
             else
             {
-                LogHistory.Text += "\nErro ao criptografar o arquivo.";
+                _logger.LogError("Erro ao criptografar o arquivo.");
+                await DisplayAlert("Erro", "Erro ao criptografar o arquivo.", "OK");
             }
         }
         catch (Exception ex)
         {
-            LogHistory.Text += $"\nErro ao processar arquivo: {ex.Message}";
+            _logger.LogError(ex, "Erro durante o processamento do arquivo.");
+            await DisplayAlert("Erro", $"Erro ao processar o arquivo: {ex.Message}", "OK");
         }
     }
 
-    private async void OnDownloadFileClicked(object sender, EventArgs e)
-    {
-        if (string.IsNullOrWhiteSpace(encryptedFilePath))
-        {
-            LogHistory.Text += "\nNenhum arquivo criptografado disponível para download.";
-            return;
-        }
-
-        try
-        {
-            // Abrir o arquivo criptografado
-            await Launcher.OpenAsync(new OpenFileRequest
-            {
-                File = new ReadOnlyFile(encryptedFilePath)
-            });
-
-            LogHistory.Text += "\nArquivo criptografado aberto.";
-        }
-        catch (Exception ex)
-        {
-            LogHistory.Text += $"\nErro ao abrir o arquivo: {ex.Message}";
-        }
-    }
-
-    private string GeneratePrompt()
-    {
-        string prompt = "Criptografe este arquivo.";
-
-        if (IsFrequentlyUsedCheckBox.IsChecked)
-        {
-            prompt += " O arquivo é usado com frequência, priorize velocidade.";
-        }
-        else
-        {
-            prompt += " O arquivo é usado raramente, priorize segurança.";
-        }
-
-        if (IsHighlyConfidentialCheckBox.IsChecked)
-        {
-            prompt += " O arquivo contém dados extremamente sigilosos.";
-        }
-
-        if (IsSharedWithThirdPartiesCheckBox.IsChecked)
-        {
-            prompt += " O arquivo será compartilhado com terceiros.";
-        }
-
-        return prompt;
-    }
-
-    private async Task<string> SendFileToEncrypt(string filePath, string prompt)
+    // Enviar Arquivo para a API
+    private async Task<(string outputPath, string encryptionMethod)> SendFileToEncrypt(string filePath, bool isHighlyConfidential, bool isFrequentlyUsed, bool isSharedWithThirdParties)
     {
         try
         {
@@ -130,35 +114,94 @@ public partial class EncryptionScreen : ContentPage
             fileContentPart.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             fileContent.Add(fileContentPart, "file", Path.GetFileName(filePath));
 
-            // Adicionar o prompt ao request
-            fileContent.Add(new StringContent(prompt), "prompt");
+            // Adicionar os parâmetros esperados pela API
+            fileContent.Add(new StringContent(isHighlyConfidential.ToString()), "isHighlyConfidential");
+            fileContent.Add(new StringContent(isFrequentlyUsed.ToString()), "isFrequentlyUsed");
+            fileContent.Add(new StringContent(isSharedWithThirdParties.ToString()), "isSharedWithThirdParties");
 
-            string apiUrl = "http://localhost:5236/api/encrypt";
+            string apiUrl = "https://localhost:44361/api/Encrypt/encrypt";
+            _logger.LogInformation("Enviando arquivo para API: {ApiUrl}", apiUrl);
 
             HttpResponseMessage response = await _httpClient.PostAsync(apiUrl, fileContent);
 
             if (response.IsSuccessStatusCode)
             {
-                var encryptedFileStream = await response.Content.ReadAsStreamAsync();
-                string encryptedFilePath = Path.Combine(FileSystem.AppDataDirectory, "encrypted_file.aes");
+                _logger.LogInformation("Resposta bem-sucedida da API.");
 
-                using (var fs = new FileStream(encryptedFilePath, FileMode.Create, FileAccess.Write))
+                // **Read the encryption method from the response headers**
+                string encryptionMethod = string.Empty;
+                if (response.Headers.TryGetValues("X-Encryption-Method", out var values))
+                {
+                    encryptionMethod = values.FirstOrDefault();
+                }
+                else
+                {
+                    _logger.LogWarning("Encryption method header not found.");
+                    encryptionMethod = "Desconhecido";
+                }
+
+                var encryptedFileStream = await response.Content.ReadAsStreamAsync();
+                string outputPath = Path.Combine(FileSystem.AppDataDirectory, Path.GetFileName(filePath) + ".encrypted");
+
+                using (var fs = new FileStream(outputPath, FileMode.Create, FileAccess.Write))
                 {
                     await encryptedFileStream.CopyToAsync(fs);
                 }
 
-                return encryptedFilePath;
+                return (outputPath, encryptionMethod);
             }
             else
             {
-                LogHistory.Text += "\nErro ao criptografar o arquivo.";
-                return string.Empty;
+                _logger.LogError("Erro na API ao criptografar: {StatusCode}", response.StatusCode);
+                return (string.Empty, string.Empty);
             }
         }
         catch (Exception ex)
         {
-            LogHistory.Text += $"\nErro ao enviar arquivo para criptografar: {ex.Message}";
-            return string.Empty;
+            _logger.LogError(ex, "Erro ao enviar arquivo para API.");
+            return (string.Empty, string.Empty);
+        }
+    }
+
+    // Permitir ao usuário salvar o arquivo em um local escolhido
+    private async Task SaveEncryptedFile(string encryptedFilePath)
+    {
+        try
+        {
+            var picker = new FileSavePicker
+            {
+                SuggestedStartLocation = PickerLocationId.Desktop
+            };
+
+            // Configurar o nome e a extensão sugeridos
+            picker.SuggestedFileName = Path.GetFileName(encryptedFilePath);
+            picker.FileTypeChoices.Add("Arquivo Encrypted", new List<string> { ".encrypted" });
+
+            // Mostrar o picker ao usuário
+            var hwnd = ((MauiWinUIWindow)App.Current.Windows[0].Handler.PlatformView).WindowHandle;
+            WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+
+            var file = await picker.PickSaveFileAsync();
+            if (file != null)
+            {
+                _logger.LogInformation("Usuário escolheu salvar o arquivo em: {FilePath}", file.Path);
+
+                using var inputStream = File.OpenRead(encryptedFilePath);
+                using var outputStream = await file.OpenStreamForWriteAsync();
+
+                await inputStream.CopyToAsync(outputStream);
+                await DisplayAlert("Sucesso", "Arquivo salvo com sucesso!", "OK");
+            }
+            else
+            {
+                _logger.LogWarning("Usuário cancelou o salvamento do arquivo.");
+                await DisplayAlert("Cancelado", "O salvamento do arquivo foi cancelado.", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao salvar arquivo criptografado.");
+            await DisplayAlert("Erro", $"Erro ao salvar arquivo: {ex.Message}", "OK");
         }
     }
 }

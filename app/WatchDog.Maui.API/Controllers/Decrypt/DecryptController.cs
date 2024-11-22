@@ -15,7 +15,7 @@ namespace WatchDog.Maui.API.Controllers
         }
 
         [HttpPost("decrypt")]
-        public IActionResult DecryptFile(IFormFile file, string encryptionMethod)
+        public IActionResult DecryptFile([FromForm] IFormFile file, [FromForm] string encryptionMethod)
         {
             if (file == null)
             {

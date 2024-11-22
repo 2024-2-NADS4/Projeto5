@@ -36,16 +36,18 @@ namespace WatchDog.Maui.API.Controllers.Encrypt
             try
             {
                 // Gerar o prompt com base nas checkbox e no tipo de arquivo
-                string prompt = GeneratePrompt(file.FileName, isHighlyConfidential, isFrequentlyUsed, isSharedWithThirdParties);
+                var prompt = GeneratePrompt(file.FileName, isHighlyConfidential, isFrequentlyUsed, isSharedWithThirdParties);
 
                 // Obter o método recomendado pela OpenAI
-                string recommendedMethod = await GetEncryptionMethodFromOpenAI(prompt);
+                var recommendedMethod = await GetEncryptionMethodFromOpenAI(prompt);
 
                 // Aplicar a criptografia com o método recomendado
-                Stream encryptedFileStream = _encryptionContext.Encrypt(file, recommendedMethod);
+                var encryptedFileStream = _encryptionContext.Encrypt(file, recommendedMethod);
 
                 // Adicionar ".encrypted" ao final do nome do arquivo original
-                string encryptedFileName = $"{file.FileName}.encrypted";
+                var encryptedFileName = $"{file.FileName}.encrypted";
+
+                Response.Headers.Add("X-Encryption-Method", recommendedMethod);
 
                 // Retornar o arquivo criptografado
                 return File(encryptedFileStream, "application/octet-stream", encryptedFileName);
@@ -56,21 +58,30 @@ namespace WatchDog.Maui.API.Controllers.Encrypt
             }
         }
 
+        #region Private Methods
         private static string GeneratePrompt(string fileName, bool isHighlyConfidential, bool isFrequentlyUsed, bool isSharedWithThirdParties)
         {
             var fileType = Path.GetExtension(fileName).ToLowerInvariant();
 
             var prompt = $"Você é um especialista em criptografia. Determine a melhor criptografia para proteger um arquivo do tipo {fileType}.";
 
-            prompt += " Baseie sua decisão nos seguintes fatores:";
-            if (isHighlyConfidential)
-                prompt += " - O arquivo contém informações altamente confidenciais.";
-            if (isFrequentlyUsed)
-                prompt += " - O arquivo é acessado frequentemente, priorize velocidade.";
-            if (isSharedWithThirdParties)
-                prompt += " - O arquivo será compartilhado com terceiros, o que exige segurança adicional.";
+            if (isHighlyConfidential || isFrequentlyUsed || isSharedWithThirdParties)
+            {
+                prompt += " Baseie sua decisão nos seguintes fatores:";
 
-            prompt += " Exemplos de resposta: 'Use AES 128' para priorizar agilidade; 'Use AES 256' para alta segurança; 'Use ChaCha20' para compartilhamento seguro.";
+                if (isHighlyConfidential)
+                    prompt += " - O arquivo contém informações altamente confidenciais.";
+                if (isFrequentlyUsed)
+                    prompt += " - O arquivo é acessado frequentemente, priorize velocidade.";
+                if (isSharedWithThirdParties)
+                    prompt += " - O arquivo será compartilhado com terceiros, o que exige segurança adicional.";
+            }
+            else
+            {
+                prompt += " Não há prioridades específicas para este arquivo. Escolha um método de criptografia padrão que seja equilibrado entre segurança e desempenho.";
+            }
+
+            prompt += " Exemplos de resposta (únicas opções disponiveis): 'Use AES 128' para priorizar agilidade; 'Use AES 256' para alta segurança; 'Use ChaCha20' para compartilhamento seguro.";
             prompt += " Responda apenas com o nome do algoritmo (ex.: 'Use AES 128'). Não escreva explicações ou justifique a escolha. Escolha apenas um entre os três fornecidos.";
 
             return prompt;
@@ -103,5 +114,7 @@ namespace WatchDog.Maui.API.Controllers.Encrypt
 
             return "NONE";
         }
+
+        #endregion
     }
 }
