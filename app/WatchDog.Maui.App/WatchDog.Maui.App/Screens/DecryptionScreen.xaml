@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:WatchDog.Maui.App"
+             x:Class="WatchDog.Maui.App.DecryptionScreen"
+             Title="">
+    <ScrollView>
+        <VerticalStackLayout Padding="10" Spacing="15" Margin="20">
+
+            <Label Text="WatchDog - Descriptografia" 
+                   FontSize="24" 
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Start" 
+                   Margin="0,0,0,20"/>
+
+            <!-- Texto Explicativo -->
+            <Frame BorderColor="Gray" CornerRadius="10" Padding="15" Margin="0,0,0,20">
+                <VerticalStackLayout>
+                    <Label Text="Sobre o processo de descriptografia"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Start"
+                           Margin="0,0,0,10" />
+                    <Label Text="Essa ferramenta permite reverter a criptografia aplicada ao arquivo. Baseando-se no método de criptografia utilizado (AES 128 ou AES 256), você pode restaurar o arquivo ao seu estado original. Para isso, escolha o método de criptografia correto utilizado durante a etapa de proteção."
+                           FontSize="16"
+                           HorizontalOptions="Start"
+                           VerticalOptions="Start"
+                           Margin="0,0,0,10" />
+
+                    <Label Text="Métodos de criptografia suportados:"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Start"
+                           VerticalOptions="Start"
+                           Margin="0,10,0,5" />
+
+                    <VerticalStackLayout Spacing="5" Margin="15,0,0,10">
+                        <Label Text="• AES 128: Método eficiente para arquivos acessados frequentemente." FontSize="16" />
+                        <Label Text="• AES 256: Alta segurança para arquivos confidenciais." FontSize="16" />
+                        <Label Text="• TripleDES: Segurança adicional para arquivos compartilhados com terceiros." FontSize="16" />
+                    </VerticalStackLayout>
+
+                    <Label Text="O arquivo descriptografado terá seu nome original restaurado, e a extensão '.encrypted' será removida."
+                           FontSize="16"
+                           HorizontalOptions="Start"
+                           VerticalOptions="Start" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Dropdown para escolher tipo de criptografia -->
+            <Label Text="Escolha o tipo de criptografia do arquivo:" 
+                   FontSize="16" 
+                   FontAttributes="Bold"
+                   HorizontalOptions="Start" 
+                   VerticalOptions="Start" 
+                   Margin="0,0,0,5"/>
+            <Picker x:Name="EncryptionTypePicker" 
+                    Title="Selecione o tipo de criptografia" 
+                    HorizontalOptions="FillAndExpand">
+                <Picker.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>AES 128</x:String>
+                        <x:String>AES 256</x:String>
+                        <x:String>TripleDES</x:String>
+                    </x:Array>
+                </Picker.ItemsSource>
+            </Picker>
+
+            <!-- Botões -->
+            <Button x:Name="UploadButton" 
+                    Text="Upload de Arquivo Criptografado" 
+                    Clicked="OnUploadFileClicked" 
+                    HorizontalOptions="FillAndExpand" 
+                    Margin="0,10,0,0" />
+            
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

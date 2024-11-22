@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:WatchDog.Maui.App"
+             x:Class="WatchDog.Maui.App.EncryptionScreen"
+             Title="">
+    <ScrollView>
+        <VerticalStackLayout Padding="10" Spacing="15" Margin="20">
+            <Label Text="Criptografar Arquivo" 
+               FontSize="24" 
+               FontAttributes="Bold"
+               HorizontalOptions="Center" 
+               VerticalOptions="Start" 
+               Margin="0,0,0,20"/>
+
+            <!-- Texto Explicativo -->
+            <Frame BorderColor="Gray" CornerRadius="10" Padding="15" Margin="0,20,0,20">
+                <VerticalStackLayout>
+                    <Label Text="Sobre o processo de criptografia"
+                FontSize="20"
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                VerticalOptions="Start"
+                Margin="0,0,0,10" />
+                    <Label Text="Essa ferramenta utiliza inteligência artificial (IA) para recomendar o melhor método de criptografia para o seu arquivo. Baseamos a recomendação no tipo de arquivo e nas opções selecionadas."
+                FontSize="16"
+                HorizontalOptions="Start"
+                VerticalOptions="Start"
+                Margin="0,0,0,10" />
+
+                    <Label Text="Métodos disponíveis:"
+                FontSize="18"
+                FontAttributes="Bold"
+                HorizontalOptions="Start"
+                VerticalOptions="Start"
+                Margin="0,10,0,5" />
+
+                    <VerticalStackLayout Spacing="5" Margin="15,0,0,10">
+                        <Label Text="• AES 128: Uma opção rápida e eficiente, ideal para arquivos acessados frequentemente." FontSize="16" />
+                        <Label Text="• AES 256: Oferece maior segurança, recomendado para arquivos altamente sigilosos." FontSize="16" />
+                        <Label Text="• 3DES: Uma alternativa mais antiga, adequada para sistemas legados ou compatibilidade com terceiros." FontSize="16" />
+                    </VerticalStackLayout>
+
+                    <Label Text="Ao finalizar, o arquivo será criptografado e terá a extensão adicionada: '.encrypted'."
+                FontSize="16"
+                HorizontalOptions="Start"
+                VerticalOptions="Start" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Seção de Checkboxes -->
+            <VerticalStackLayout Spacing="10">
+                <HorizontalStackLayout Spacing="10">
+                    <CheckBox x:Name="IsFrequentlyUsedCheckBox" />
+                    <Label Text="O arquivo é usado com frequência?" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Spacing="10">
+                    <CheckBox x:Name="IsHighlyConfidentialCheckBox" />
+                    <Label Text="O arquivo contém dados extremamente sigilosos?" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Spacing="10">
+                    <CheckBox x:Name="IsSharedWithThirdPartiesCheckBox" />
+                    <Label Text="O arquivo será compartilhado com terceiros?" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+            
+            <!-- Botões -->
+            <Button x:Name="UploadButton" 
+                Text="Upload Arquivo" 
+                Clicked="OnUploadFileClicked" 
+                HorizontalOptions="FillAndExpand" />
+            
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

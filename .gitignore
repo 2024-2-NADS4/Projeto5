@@ -3,14 +3,9 @@ bin/
 obj/
 [Bb]uild/
 [Bb]uilds/
-**/*.user
-**/*.rsuser
-**/*.suo
-**/*.cache
-**/*.pdb
-*.dbmdl
-*.opendb
-*.vscode/
+
+# Configuração para rastrear arquivos XAML do MAUI
+!**/obj/**/*.xaml
 
 # Arquivos de logs e temporários
 *.log
@@ -19,7 +14,7 @@ obj/
 *.tlog
 *.ide.*
 
-# Arquivos do Rider e VS Code
+# Arquivos Rider e VS Code
 .idea/
 .vscode/
 
@@ -28,11 +23,12 @@ obj/
 Thumbs.db
 *.~lock.*
 
-# Pacotes NuGet
-*.nupkg
-*.snupkg
-packages/
+# NuGet Packages (permitindo configuração e cache local)
 .nuget/
+packages/
+!.nuget/packages/
+!packages.config
+!global.json
 
 # Configurações específicas de usuário
 .vs/
@@ -52,28 +48,15 @@ packages/
 *.manifest
 *.tlog
 *.dsym
-
-# Arquivos gerados por compiladores
+**/platforms/
+**/Resources/Raw/*
+!**/Resources/Raw/**/*.*
 *.dll
 *.exe
-*.ilk
-*.lib
-*.log
-*.obj
-*.iobj
-*.ipdb
-*.pch
-*.pdb
-*.pgc
-*.pgd
-*.rsp
-*.sbr
-*.tlb
-*.tli
+
+# Arquivos gerados por compiladores
 *.tmp
-*.tmp_proj
-*.cmd
-*.userosscache
+*.pdb
 *.log.json
 
 # Arquivos gerados pelo Visual Studio
@@ -83,8 +66,6 @@ packages/
 # Arquivos de depuração do MAUI
 *.csproj.user
 *.pidb
-*.pidb-shm
-*.pidb-wal
 
 # Arquivos de publicação
 publish/
@@ -94,12 +75,5 @@ TestResults/
 # Configurações específicas de máquina para projetos .NET
 .env
 .env.*
-secrets.json
-appsettings.Development.json
-appsettings.Production.json
-
-# MAUI: Projetos específicos de plataforma
-**/bin/
-**/obj/
-**/platforms/
-**/Resources/Raw/*
+!appsettings.Development.json
+!appsettings.Production.json
