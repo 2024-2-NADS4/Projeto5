@@ -1,4 +1,14 @@
-# Watchdog
+# FECAP - Fundação de Comércio Álvares Penteado
+
+<p align="center">
+<a href= "https://www.fecap.br/"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhZPrRa89Kma0ZZogxm0pi-tCn_TLKeHGVxywp-LXAFGR3B1DPouAJYHgKZGV0XTEf4AE&usqp=CAU" alt="FECAP - Fundação de Comércio Álvares Penteado" border="0"></a>
+</p>
+
+# WatchDog
+
+## Integrantes: <a href="">Demetrio Henrique Souza Cleto</a>, <a href="">Lucca Gomes Vieira</a>, <a href="">Luigi Augusto Bezerra Consentino</a>, <a href="">Mateus Macedo Batista de Souza</a>, <a href="">Mateus Sousa Piccinin</a>, <a href="">Matheus Andrade Mauro</a>, <a href="">Nathan Camargo de Oliveira Silva</a>,  <a href="">Thiago Henrique Martinho da Silva</a>
+
+## Professores Orientadores: <a href="https://www.linkedin.com/in/edsonbarbero/">Edson Barbero</a>, <a href="https://www.linkedin.com/in/victorbarq/">Victor Bruno Alexander Rosetti de Quiroz</a>, <a href="https://www.linkedin.com/in/lucymari/">Luci Mari Tabuti</a>, <a href="https://www.linkedin.com/in/eduardo-savino-gomes/">Eduardo Savino Gomes</a>, <a href="https://www.linkedin.com/in/aimarlopes/">Aimar Martins Lopes</a>
 
 ![Banner WatchDog](imagens/banner_watchdog.jpg)
 
@@ -11,7 +21,7 @@ O **Watchdog** é uma solução inovadora de segurança digital criada para prot
    Um serviço personalizado que configura o dispositivo do cliente para protegê-lo contra acessos indevidos em caso de roubo ou perda, incluindo dicas práticas para manter os dados seguros.
 
 2. **Chatbot de Criptografia de Arquivos**  
-   Um chatbot que permite a criptografia de arquivos de forma simples e segura, gerando códigos únicos e oferecendo backup em nuvem para máxima proteção.
+   Um chatbot que permite a criptografia de arquivos de forma simples e segura, gerando códigos únicos que são armazenados localmente em um pen drive. O arquivo criptografado só pode ser acessado quando o pen drive está conectado à máquina, garantindo uma camada adicional de segurança.
 
 ---
 
@@ -39,3 +49,34 @@ O Watchdog começou como um **chatbot para análise de possíveis golpes**, mas 
 - **Um chatbot para criptografia de arquivos**, que gera códigos únicos e oferece uma camada extra de proteção, incluindo backup em nuvem para evitar perdas.
 
 Essa mudança permitiu criar um modelo de negócio mais sólido e alinhado às demandas do mercado, enquanto continuamos impactando positivamente a vida de nossos usuários.
+
+## 🛠 Estrutura de pastas
+-Raiz
+
+|-->app
+
+ |-->WatchDog.Maui.API
+ 
+ |-->WatchDog.Maui
+ 
+ |-->WatchDog.Maui.sln
+ 
+|-->extras
+
+ |-->IA WatchDog.pdf
+ 
+ |-->eBook Apoio - WatchDog.pdf
+ 
+ |-->relatorio_projeto.pdf
+ 
+|-->imagens
+
+ |-->banner_watchdog.jpg
+ 
+ |-->logotipo.png
+ 
+|.gitignore
+
+|readme.md
+
+
