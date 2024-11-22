@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WatchDog.Maui.API.Services.Decrypt;
 
-namespace WatchDog.Maui.API.Controllers
+namespace WatchDog.Maui.API.Controllers.Decrypt
 {
     [ApiController]
     [Route("api/[controller]")]
