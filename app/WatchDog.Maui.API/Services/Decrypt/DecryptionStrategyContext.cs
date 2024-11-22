@@ -1,4 +1,5 @@
 ﻿using WatchDog.Maui.API.Interfaces.Decrypt;
+using WatchDog.Maui.API.Services.Encrypt;
 
 namespace WatchDog.Maui.API.Services.Decrypt
 {
@@ -12,7 +13,7 @@ namespace WatchDog.Maui.API.Services.Decrypt
             {
                 { "AES 128", new Aes128DecryptionStrategy() },
                 { "AES 256", new Aes256DecryptionStrategy() },
-                { "ChaCha20", new ChaCha20DecryptionStrategy() }
+                { "TRIPLEDES", new TripleDesDecryptionStrategy() }
             };
         }
 

@@ -24,7 +24,7 @@
                            HorizontalOptions="Center"
                            VerticalOptions="Start"
                            Margin="0,0,0,10" />
-                    <Label Text="Essa ferramenta permite reverter a criptografia aplicada ao arquivo. Baseando-se no método de criptografia utilizado (AES 128, AES 256 ou ChaCha20), você pode restaurar o arquivo ao seu estado original. Para isso, escolha o método de criptografia correto utilizado durante a etapa de proteção."
+                    <Label Text="Essa ferramenta permite reverter a criptografia aplicada ao arquivo. Baseando-se no método de criptografia utilizado (AES 128 ou AES 256), você pode restaurar o arquivo ao seu estado original. Para isso, escolha o método de criptografia correto utilizado durante a etapa de proteção."
                            FontSize="16"
                            HorizontalOptions="Start"
                            VerticalOptions="Start"
@@ -40,7 +40,7 @@
                     <VerticalStackLayout Spacing="5" Margin="15,0,0,10">
                         <Label Text="• AES 128: Método eficiente para arquivos acessados frequentemente." FontSize="16" />
                         <Label Text="• AES 256: Alta segurança para arquivos confidenciais." FontSize="16" />
-                        <Label Text="• ChaCha20: Segurança adicional para arquivos compartilhados com terceiros." FontSize="16" />
+                        <Label Text="• TripleDES: Segurança adicional para arquivos compartilhados com terceiros." FontSize="16" />
                     </VerticalStackLayout>
 
                     <Label Text="O arquivo descriptografado terá seu nome original restaurado, e a extensão '.encrypted' será removida."
@@ -64,7 +64,7 @@
                     <x:Array Type="{x:Type x:String}">
                         <x:String>AES 128</x:String>
                         <x:String>AES 256</x:String>
-                        <x:String>ChaCha20</x:String>
+                        <x:String>TripleDES</x:String>
                     </x:Array>
                 </Picker.ItemsSource>
             </Picker>

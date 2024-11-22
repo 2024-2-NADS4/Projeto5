@@ -15,8 +15,13 @@ namespace WatchDog.Maui.API.Controllers.Encrypt
         {
             _encryptionContext = new EncryptionStrategyContext();
 
-            // Recuperar a API Key do appsettings.json
-            string apiKey = configuration.GetValue<string>("OpenAI:ApiKey");
+            // Recuperar a API Key do appsettings.json com validação
+            string? apiKey = configuration.GetValue<string>("OpenAI:ApiKey");
+
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                throw new InvalidOperationException("A chave da API para OpenAI ('OpenAI:ApiKey') não foi encontrada ou está vazia.");
+            }
 
             // Configurar o ChatClient com a API Key
             _chatClient = new ChatClient(
@@ -26,7 +31,7 @@ namespace WatchDog.Maui.API.Controllers.Encrypt
         }
 
         [HttpPost("encrypt")]
-        public async Task<IActionResult> EncryptFile( IFormFile file, bool isHighlyConfidential, bool isFrequentlyUsed, bool isSharedWithThirdParties)
+        public async Task<IActionResult> EncryptFile([FromForm] IFormFile file, [FromForm] bool isHighlyConfidential, [FromForm] bool isFrequentlyUsed, [FromForm] bool isSharedWithThirdParties)
         {
             if (file == null)
             {
@@ -47,7 +52,7 @@ namespace WatchDog.Maui.API.Controllers.Encrypt
                 // Adicionar ".encrypted" ao final do nome do arquivo original
                 var encryptedFileName = $"{file.FileName}.encrypted";
 
-                Response.Headers.Add("X-Encryption-Method", recommendedMethod);
+                Response.Headers["X-Encryption-Method"] = recommendedMethod;
 
                 // Retornar o arquivo criptografado
                 return File(encryptedFileStream, "application/octet-stream", encryptedFileName);
@@ -63,26 +68,26 @@ namespace WatchDog.Maui.API.Controllers.Encrypt
         {
             var fileType = Path.GetExtension(fileName).ToLowerInvariant();
 
-            var prompt = $"Você é um especialista em criptografia. Determine a melhor criptografia para proteger um arquivo do tipo {fileType}.";
+            var prompt = $"Você é um especialista em criptografia. Escolha o melhor algoritmo para proteger um arquivo do tipo '{fileType}'.";
 
             if (isHighlyConfidential || isFrequentlyUsed || isSharedWithThirdParties)
             {
-                prompt += " Baseie sua decisão nos seguintes fatores:";
+                prompt += " Considere os seguintes fatores:";
 
                 if (isHighlyConfidential)
-                    prompt += " - O arquivo contém informações altamente confidenciais.";
+                    prompt += " - Contém informações altamente confidenciais (priorize alta segurança).";
                 if (isFrequentlyUsed)
-                    prompt += " - O arquivo é acessado frequentemente, priorize velocidade.";
+                    prompt += " - É acessado frequentemente (priorize velocidade).";
                 if (isSharedWithThirdParties)
-                    prompt += " - O arquivo será compartilhado com terceiros, o que exige segurança adicional.";
+                    prompt += " - Será compartilhado com terceiros. Para este caso, priorize compatibilidade e segurança no compartilhamento. **Recomenda-se usar TripleDES como a melhor opção.**";
             }
             else
             {
-                prompt += " Não há prioridades específicas para este arquivo. Escolha um método de criptografia padrão que seja equilibrado entre segurança e desempenho.";
+                prompt += " Não há fatores especiais; escolha um algoritmo equilibrado entre segurança e desempenho.";
             }
 
-            prompt += " Exemplos de resposta (únicas opções disponiveis): 'Use AES 128' para priorizar agilidade; 'Use AES 256' para alta segurança; 'Use ChaCha20' para compartilhamento seguro.";
-            prompt += " Responda apenas com o nome do algoritmo (ex.: 'Use AES 128'). Não escreva explicações ou justifique a escolha. Escolha apenas um entre os três fornecidos.";
+            prompt += " Escolha apenas uma das opções: 'Use AES 128' para agilidade, 'Use AES 256' para alta segurança, ou 'Use TripleDES' para compatibilidade e segurança no compartilhamento.";
+            prompt += " Responda somente com o nome do algoritmo (ex.: 'Use AES 128'). Não forneça explicações adicionais.";
 
             return prompt;
         }
@@ -110,7 +115,7 @@ namespace WatchDog.Maui.API.Controllers.Encrypt
             response = response.Trim().ToUpper();
             if (response.Contains("AES 128")) return "AES 128";
             if (response.Contains("AES 256")) return "AES 256";
-            if (response.Contains("RSA")) return "RSA";
+            if (response.Contains("TRIPLEDES")) return "TripleDES";
 
             return "NONE";
         }

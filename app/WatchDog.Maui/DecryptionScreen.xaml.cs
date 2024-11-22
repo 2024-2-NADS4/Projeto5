@@ -25,7 +25,7 @@ public partial class DecryptionScreen : ContentPage
             var result = await FilePicker.Default.PickAsync();
             if (result != null)
             {
-                filePath = result.FullPath;
+                filePath = result.FullPath ?? string.Empty;
                 _logger.LogInformation("Arquivo carregado: {FileName}", result.FileName);
 
                 // Notificação de sucesso no upload
@@ -94,14 +94,29 @@ public partial class DecryptionScreen : ContentPage
     // Enviar Arquivo para a API
     private async Task<string> SendFileToDecrypt(string filePath, string encryptionMethod)
     {
+        if (string.IsNullOrEmpty(filePath))
+        {
+            _logger.LogWarning("Caminho do arquivo é nulo ou vazio.");
+            return string.Empty;
+        }
+
         try
         {
             var fileContent = new MultipartFormDataContent();
-            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+
+            // Ensure the file exists
+            if (!File.Exists(filePath))
+            {
+                _logger.LogError("Arquivo não encontrado: {FilePath}", filePath);
+                await DisplayAlert("Erro", "Arquivo não encontrado.", "OK");
+                return string.Empty;
+            }
+
+            using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             var fileContentPart = new StreamContent(fileStream);
             fileContentPart.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             fileContentPart.Headers.ContentLength = fileStream.Length; // Ensure Content-Length is set
-            fileContent.Add(fileContentPart, "file", Path.GetFileName(filePath));
+            fileContent.Add(fileContentPart, "file", Path.GetFileName(filePath) ?? "uploaded_file");
             fileContent.Add(new StringContent(encryptionMethod), "encryptionMethod");
 
             string apiUrl = "https://localhost:44361/api/Decrypt/decrypt";
@@ -117,7 +132,8 @@ public partial class DecryptionScreen : ContentPage
                 var decryptedFileStream = await response.Content.ReadAsStreamAsync();
 
                 // Remove the .encrypted extension to get the original file name
-                string outputFileName = Path.GetFileName(filePath).Replace(".encrypted", "");
+                string originalFileName = Path.GetFileName(filePath) ?? "decrypted_file";
+                string outputFileName = originalFileName.Replace(".encrypted", "");
                 string outputPath = Path.Combine(FileSystem.AppDataDirectory, outputFileName);
 
                 using (var fs = new FileStream(outputPath, FileMode.Create, FileAccess.Write))
@@ -130,12 +146,14 @@ public partial class DecryptionScreen : ContentPage
             else
             {
                 _logger.LogError("Erro na API ao descriptografar: {StatusCode}", response.StatusCode);
+                await DisplayAlert("Erro", "Falha na comunicação com o servidor.", "OK");
                 return string.Empty;
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro ao enviar arquivo para descriptografia.");
+            await DisplayAlert("Erro", $"Erro ao enviar arquivo: {ex.Message}", "OK");
             return string.Empty;
         }
     }
@@ -143,6 +161,13 @@ public partial class DecryptionScreen : ContentPage
     // Permitir ao usuário salvar o arquivo em um local escolhido
     private async Task SaveDecryptedFile(string decryptedFilePath)
     {
+        if (string.IsNullOrEmpty(decryptedFilePath))
+        {
+            _logger.LogWarning("Caminho do arquivo descriptografado é nulo ou vazio.");
+            await DisplayAlert("Erro", "Arquivo descriptografado não encontrado.", "OK");
+            return;
+        }
+
         try
         {
             var picker = new FileSavePicker
@@ -150,34 +175,55 @@ public partial class DecryptionScreen : ContentPage
                 SuggestedStartLocation = PickerLocationId.Desktop
             };
 
-            // Get the original file name without the .encrypted extension
             string originalFileName = Path.GetFileName(decryptedFilePath);
-            string originalFileNameWithoutExtension = originalFileName.Replace(".encrypted", "");
+            if (string.IsNullOrEmpty(originalFileName))
+            {
+                originalFileName = "arquivo_descriptografado";
+            }
 
+            string originalFileNameWithoutExtension = originalFileName.Replace(".encrypted", "");
             picker.SuggestedFileName = originalFileNameWithoutExtension;
 
-            // Get the original file extension
             string originalExtension = Path.GetExtension(originalFileNameWithoutExtension);
-
-            // If there's no extension (e.g., the file was "file.encrypted"), you might want to handle it
             if (string.IsNullOrEmpty(originalExtension))
             {
-                originalExtension = "*"; // Allow all files
-                picker.FileTypeChoices.Add("Todos os Arquivos", ["."]);
+                picker.FileTypeChoices.Add("Todos os Arquivos", new List<string> { "." });
             }
             else
             {
-                picker.FileTypeChoices.Add($"Arquivo {originalExtension}", [originalExtension]);
+                picker.FileTypeChoices.Add($"Arquivo {originalExtension}", new List<string> { originalExtension });
             }
 
-            // Mostrar o picker ao usuário
-            var hwnd = ((MauiWinUIWindow)App.Current.Windows[0].Handler.PlatformView).WindowHandle;
+            var mainWindow = Application.Current?.Windows.FirstOrDefault();
+            if (mainWindow == null)
+            {
+                _logger.LogError("Janela principal não encontrada.");
+                await DisplayAlert("Erro", "Janela principal não encontrada.", "OK");
+                return;
+            }
+
+            // Get the window handle for the pickerk
+            if (mainWindow.Handler?.PlatformView is not MauiWinUIWindow platformWindow)
+            {
+                _logger.LogError("Falha ao obter o handle da janela.");
+                await DisplayAlert("Erro", "Falha ao obter o handle da janela.", "OK");
+                return;
+            }
+
+            var hwnd = platformWindow.WindowHandle;
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
 
             var file = await picker.PickSaveFileAsync();
             if (file != null)
             {
                 _logger.LogInformation("Usuário escolheu salvar o arquivo em: {FilePath}", file.Path);
+
+                if (!File.Exists(decryptedFilePath))
+                {
+                    _logger.LogError("Arquivo descriptografado não encontrado: {FilePath}", decryptedFilePath);
+                    await DisplayAlert("Erro", "Arquivo descriptografado não encontrado.", "OK");
+                    return;
+                }
 
                 using var inputStream = File.OpenRead(decryptedFilePath);
                 using var outputStream = await file.OpenStreamForWriteAsync();

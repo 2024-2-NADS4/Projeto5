@@ -16,7 +16,7 @@ namespace WatchDog.Maui
                 });
 
             builder.Services.AddSingleton<IImageSource>(new FileImageSource { File = "logowatchdogremovebg.png" });
-            builder.Services.AddTransient<MainPage>();
+            builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<HomeScreen>();
             builder.Services.AddTransient<EncryptionScreen>();
             builder.Services.AddTransient<DecryptionScreen>();

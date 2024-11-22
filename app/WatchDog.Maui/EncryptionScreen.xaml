@@ -39,7 +39,7 @@
                     <VerticalStackLayout Spacing="5" Margin="15,0,0,10">
                         <Label Text="• AES 128: Uma opção rápida e eficiente, ideal para arquivos acessados frequentemente." FontSize="16" />
                         <Label Text="• AES 256: Oferece maior segurança, recomendado para arquivos altamente sigilosos." FontSize="16" />
-                        <Label Text="• ChaCha20: Ideal para arquivos compartilhados com terceiros, garantindo alta segurança e eficiência." FontSize="16" />
+                        <Label Text="• 3DES: Uma alternativa mais antiga, adequada para sistemas legados ou compatibilidade com terceiros." FontSize="16" />
                     </VerticalStackLayout>
 
                     <Label Text="Ao finalizar, o arquivo será criptografado e terá a extensão adicionada: '.encrypted'."

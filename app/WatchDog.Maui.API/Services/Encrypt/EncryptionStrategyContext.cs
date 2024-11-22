@@ -12,7 +12,7 @@ namespace WatchDog.Maui.API.Services.Encrypt
             {
                 { "AES 128", new Aes128EncryptionStrategy() },
                 { "AES 256", new Aes256EncryptionStrategy() },
-                { "ChaCha20", new ChaCha20EncryptionStrategy() }
+                { "TRIPLEDES", new TripleDesEncryptionStrategy() }
             };
         }
 

@@ -104,7 +104,7 @@ public partial class EncryptionScreen : ContentPage
     }
 
     // Enviar Arquivo para a API
-    private async Task<(string outputPath, string encryptionMethod)> SendFileToEncrypt(string filePath, bool isHighlyConfidential, bool isFrequentlyUsed, bool isSharedWithThirdParties)
+    private async Task<(string outputPath, string? encryptionMethod)> SendFileToEncrypt(string filePath, bool isHighlyConfidential, bool isFrequentlyUsed, bool isSharedWithThirdParties)
     {
         try
         {
@@ -128,8 +128,8 @@ public partial class EncryptionScreen : ContentPage
             {
                 _logger.LogInformation("Resposta bem-sucedida da API.");
 
-                // **Read the encryption method from the response headers**
-                string encryptionMethod = string.Empty;
+                // Read the encryption method from the response headers
+                string? encryptionMethod = null;
                 if (response.Headers.TryGetValues("X-Encryption-Method", out var values))
                 {
                     encryptionMethod = values.FirstOrDefault();
@@ -153,13 +153,13 @@ public partial class EncryptionScreen : ContentPage
             else
             {
                 _logger.LogError("Erro na API ao criptografar: {StatusCode}", response.StatusCode);
-                return (string.Empty, string.Empty);
+                return (string.Empty, null);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro ao enviar arquivo para API.");
-            return (string.Empty, string.Empty);
+            return (string.Empty, null);
         }
     }
 
@@ -177,8 +177,17 @@ public partial class EncryptionScreen : ContentPage
             picker.SuggestedFileName = Path.GetFileName(encryptedFilePath);
             picker.FileTypeChoices.Add("Arquivo Encrypted", new List<string> { ".encrypted" });
 
-            // Mostrar o picker ao usuário
-            var hwnd = ((MauiWinUIWindow)App.Current.Windows[0].Handler.PlatformView).WindowHandle;
+            // Verificar se a janela principal está disponível e obter o hwnd
+            var mainWindow = App.Current?.Windows.FirstOrDefault();
+            if (mainWindow?.Handler?.PlatformView is not MauiWinUIWindow platformWindow)
+            {
+                _logger.LogError("Falha ao obter a janela principal ou o handler da janela.");
+                await DisplayAlert("Erro", "Falha ao obter a janela principal para exibir o salvamento.", "OK");
+                return;
+            }
+
+            var hwnd = platformWindow.WindowHandle;
+
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
 
             var file = await picker.PickSaveFileAsync();
